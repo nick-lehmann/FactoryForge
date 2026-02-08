@@ -1,5 +1,5 @@
 <script module>
-	import type { Node } from '@xyflow/svelte';
+	import { type Node } from '@xyflow/svelte';
 
 	export type ProductionNodeInput = {
 		// Human readable name for building
@@ -13,6 +13,9 @@
 
 		// Recipe assigned to building
 		recipe?: Satisfactory.Recipe;
+
+    // How often you need this building
+    amount?: number
 
 		// Context menu handler
 		onContextMenu?: (nodeId: string, buildingClassName: string) => void;
@@ -106,6 +109,9 @@
 		{#if data.recipe}
 			<div class="recipe">{data.recipe.name}</div>
 		{/if}
+    {#if data.amount}
+      <div>x{data.amount.toFixed(2)}</div>
+    {/if}
 	</div>
 
 	{#each { length: numberOfOutputs } as _, index}

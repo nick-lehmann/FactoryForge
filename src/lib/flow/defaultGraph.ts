@@ -93,4 +93,4 @@ export const defaultEdges: Edge[] = [
 			type: MarkerType.ArrowClosed
 		}
 	}
-]; 
+];

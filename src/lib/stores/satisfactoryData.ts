@@ -24,28 +24,28 @@ function createSatisfactoryDataStore() {
 
 	return {
 		subscribe,
-		
+
 		// Load the data
 		async load() {
-			update(state => ({ ...state, loading: true, error: null }));
-			
+			update((state) => ({ ...state, loading: true, error: null }));
+
 			try {
 				const data = await Satisfactory.loadData();
-				update(state => ({ 
-					...state, 
-					data, 
-					loading: false, 
+				update((state) => ({
+					...state,
+					data,
+					loading: false,
 					error: null,
-					initialized: true 
+					initialized: true
 				}));
 				return data;
 			} catch (error) {
 				const errorMessage = error instanceof Error ? error.message : 'Failed to load data';
-				update(state => ({ 
-					...state, 
-					loading: false, 
+				update((state) => ({
+					...state,
+					loading: false,
 					error: errorMessage,
-					initialized: true 
+					initialized: true
 				}));
 				throw error;
 			}
@@ -90,7 +90,7 @@ export const productionBuildings: Readable<Satisfactory.Building[]> = derived(
 
 		// Create a set of building class names that appear in recipes
 		const productionBuildingClassNames = new Set<string>();
-		
+
 		Object.values($store.data.recipes).forEach((recipe) => {
 			recipe.producedIn.forEach((buildingClassName) => {
 				productionBuildingClassNames.add(buildingClassName);
@@ -126,4 +126,4 @@ export const isInitialized: Readable<boolean> = derived(
 // Auto-load data when in browser environment
 if (browser) {
 	satisfactoryDataStore.load().catch(console.error);
-} 
+}

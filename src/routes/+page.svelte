@@ -15,6 +15,7 @@
 	import {
 		ProductionNode,
 		SourceNode,
+		LabeledEdge,
 		loadGraphState,
 		saveGraphState,
 		resetGraphState,
@@ -40,9 +41,14 @@
 		source: SourceNode
 	};
 
+	// Define edge types mapping
+	const edgeTypes = {
+		labeled: LabeledEdge
+	};
+
 	// Define default edge options
 	const defaultEdgeOptions: DefaultEdgeOptions = {
-		type: 'smoothstep',
+		type: 'labeled',
 		animated: true,
 		markerEnd: {
 			type: MarkerType.ArrowClosed,
@@ -326,7 +332,7 @@
 <SolverCommandPalette open={solverOpen} onSolve={handleSolve} onClose={handleSolverClose} />
 
 <div style:width="100%" style:height="100vh">
-	<SvelteFlow bind:nodes bind:edges {nodeTypes} onconnect={onConnect} {defaultEdgeOptions} fitView>
+	<SvelteFlow bind:nodes bind:edges {nodeTypes} {edgeTypes} onconnect={onConnect} {defaultEdgeOptions} fitView>
 		<MiniMap />
 		<Controls />
 		<Background />

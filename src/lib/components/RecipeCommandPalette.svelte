@@ -78,13 +78,13 @@
 	});
 
 	// Handle recipe selection
-	const selectRecipe = (recipe: Satisfactory.Recipe) => {
+	function selectRecipe(recipe: Satisfactory.Recipe) {
 		onRecipeSelected(recipe);
 		handleClose();
 	};
 
 	// Handle closing
-	const handleClose = () => {
+	function handleClose() {
 		searchValue = '';
 		onClose();
 	};

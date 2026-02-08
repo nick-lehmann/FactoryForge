@@ -31,6 +31,7 @@ A: "Almost identical to the answer to question 2. In the beginning, I want to st
 **Q: Are you considering additional features beyond the factory planner, such as production calculation, power consumption estimation, optimization suggestions, or map integration?**
 
 A: "Yes, out of your four recommendations, I plan to add the following three:
+
 - Production calculation (items per minute)
 - Power consumption estimation
 - Optimization suggestions"
@@ -47,4 +48,4 @@ Sharing with others is not planned currently. While I might deploy this later, t
 
 **Q: What database features do you plan to implement for persistence?**
 
-A: "I will start with SQLite. Later, I might want to experience with graph-based databases." 
+A: "I will start with SQLite. Later, I might want to experience with graph-based databases."

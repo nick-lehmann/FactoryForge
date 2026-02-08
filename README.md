@@ -28,4 +28,3 @@ FactoryForge provides a node-based editor to plan your factories.
   - Define the number, type and amount of input resources
   - Define the number, type and amoutn of output resources
   - Apply to only a single machine
-

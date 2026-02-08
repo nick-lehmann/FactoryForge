@@ -10,7 +10,6 @@ Satisfactory is a first-person open-world factory building simulation game. The 
 - Research and Unlock: Progress is gated by a progression system where players research new technologies and blueprints through the M.A.M. (Molecular Analysis Machine) and Space Elevator. This unlocks new buildings, recipes, and tools.
 - Automate and Optimize: The ultimate goal is to create increasingly complex and efficient production lines that automatically produce goods without manual intervention. This involves optimizing layouts, conveyor belt throughput, and power usage.
 
-
 ## Key Mechanics:
 
 - Production Chains: Resources flow through a series of machines to create higher-tier items. Understanding the dependencies and ratios between different production steps is crucial.
@@ -20,7 +19,6 @@ Satisfactory is a first-person open-world factory building simulation game. The 
 - Building System: A flexible building system allows players to construct and arrange buildings and infrastructure in a 3D space.
 - Recipe Management: Each processing machine has a set of recipes it can produce, each requiring specific inputs and producing specific outputs. Players need to manage which recipes are active in each machine.
 - Tier Progression: Unlocking new tiers through the Space Elevator grants access to more advanced buildings, resources, and production capabilities.
-
 
 ## Relevant Data Points for a Coding Project:
 

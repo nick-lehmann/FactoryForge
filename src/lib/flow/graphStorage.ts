@@ -68,4 +68,4 @@ export function resetGraphState(): GraphState {
 
 	saveGraphState(defaultState);
 	return defaultState;
-} 
+}

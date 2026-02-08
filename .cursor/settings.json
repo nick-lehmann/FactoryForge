@@ -1,33 +1,38 @@
 {
-  "codeStyle": {
-    "javascript": {
-      "preferEarlyReturn": true,
-      "comments": {
-        "guardClausePattern": "Guard clause - exit early"
-      }
-    },
-    "typescript": {
-      "preferEarlyReturn": true,
-      "comments": {
-        "guardClausePattern": "Guard clause - exit early"
-      }
-    },
-    "svelte": {
-      "preferEarlyReturn": true,
-      "comments": {
-        "guardClausePattern": "Guard clause - exit early"
-      }
-    }
-  },
-  "editor": {
-    "formatOnSave": true
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "typescript": {
-        "no-nested-conditionals": "warn"
-      }
-    }
-  }
-} 
+	"codeStyle": {
+		"javascript": {
+			"preferEarlyReturn": true,
+			"comments": {
+				"guardClausePattern": "Guard clause - exit early"
+			}
+		},
+		"typescript": {
+			"preferEarlyReturn": true,
+			"comments": {
+				"guardClausePattern": "Guard clause - exit early"
+			}
+		},
+		"svelte": {
+			"preferEarlyReturn": true,
+			"comments": {
+				"guardClausePattern": "Guard clause - exit early"
+			}
+		}
+	},
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"[svelte]": {
+		"editor.defaultFormatter": "svelte.svelte-vscode"
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"typescript": {
+				"no-nested-conditionals": "warn"
+			}
+		}
+	}
+}

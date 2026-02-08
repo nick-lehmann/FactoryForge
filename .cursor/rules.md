@@ -19,42 +19,42 @@ Whenever you declare a function with a name, use the `function` keyword. Avoid u
 1. Define node types at the top level
 2. Create custom node components for specialized behaviors
 3. Define connection rules that follow domain logic (outputs → inputs)
-4. Use descriptive labels for nodes and connections 
+4. Use descriptive labels for nodes and connections
 
 ### Typescript
 
 1. Every code must be typesafe.
 2. Explicit `any`s are forbidden
-3. Data from untrusted sources (network, filesystem, user input) is to be typed as `unknown` and validated. 
-
+3. Data from untrusted sources (network, filesystem, user input) is to be typed as `unknown` and validated.
 
 ### Early Return Pattern
 
 Always use early returns (guard clauses) instead of nesting code inside conditionals. This makes the code more readable by reducing indentation levels and clarifying the function's flow.
 
 **Example:**
+
 ```typescript
 // ✅ DO THIS
 function processData(data) {
-  // Guard clause - exit early if condition not met
-  if (!data) {
-    return;
-  }
-  
-  // Main logic at the same indentation level
-  processValidData(data);
+	// Guard clause - exit early if condition not met
+	if (!data) {
+		return;
+	}
+
+	// Main logic at the same indentation level
+	processValidData(data);
 }
 
 // ❌ AVOID THIS
 function processData(data) {
-  if (data) {
-    processValidData(data);
-  }
+	if (data) {
+		processValidData(data);
+	}
 }
 ```
 
 ### Loops
 
-Whenever possible, use `for...of` loops instead of `.forEach` loops. While the two options are identical, the first is a lot more readable.  
+Whenever possible, use `for...of` loops instead of `.forEach` loops. While the two options are identical, the first is a lot more readable.
 
 When the for loop contains only one statement, do not add parentheses.

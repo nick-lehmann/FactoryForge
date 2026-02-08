@@ -13,7 +13,7 @@ const NODE_WIDTH = 172;
 const NODE_HEIGHT = 120;
 
 export interface SolverConversionResult {
-  nodes: FactoryNode[]
+  nodes: FactoryNode[];
   edges: Edge[];
   nextNodeId: number;
 }
@@ -39,9 +39,7 @@ export function convertSolverResultToFlow(
   /**
    * Recursively create nodes for the production tree
    */
-  function createNodesRecursive(
-    recipeNode: RecipeNode,
-  ): string {
+  function createNodesRecursive(recipeNode: RecipeNode): string {
     // Check if this RecipeNode has already been converted
     if (convertedNodes.has(recipeNode)) {
       return convertedNodes.get(recipeNode)!;
@@ -51,6 +49,7 @@ export function convertSolverResultToFlow(
     const nodeId = currentNodeId.toString();
     currentNodeId++;
 
+    const { building, amount } = recipeNode
     const productionNode: ProductionNode = {
       id: nodeId,
       type: 'production',
@@ -61,7 +60,7 @@ export function convertSolverResultToFlow(
         buildingClassName: recipeNode.building.className,
         recipe: recipeNode.recipe,
         solverGenerated: true,
-        // buildingCount: recipeNode.amount
+        amount: recipeNode.amount
       }
     };
 
@@ -79,17 +78,19 @@ export function convertSolverResultToFlow(
         const producerNodeId = createNodesRecursive(input.producer);
 
         // Create edge from producer to current node
+        const itemObj = data.items[input.item];
         const edge: Edge = {
           id: `e${producerNodeId}-${nodeId}`,
           source: producerNodeId,
           target: nodeId,
           sourceHandle: 'source-1',
           targetHandle: `target-${inputIndex + 1}`,
-          type: 'bezier',
+          type: 'labeled',
           animated: true,
           data: {
             itemClass: input.item,
-            // amount: input.amountPerMinute,
+            itemName: itemObj?.name ?? input.item,
+            amount: input.amountPerMinute,
             solverGenerated: true
           }
         };
@@ -115,7 +116,7 @@ export function convertSolverResultToFlow(
               label: 'Resource Source', // Required by SourceNodeInput
               icon: 'mine',
               assignedItem: item,
-              solverGenerated: true,
+              solverGenerated: true
               // requiredAmount: input.amountPerMinute
             }
           };
@@ -127,17 +128,19 @@ export function convertSolverResultToFlow(
         }
 
         // Create edge from source to production node
+        const sourceItemObj = data.items[input.item];
         const edge: Edge = {
           id: `e${sourceNodeId}-${nodeId}`,
           source: sourceNodeId,
           target: nodeId,
           sourceHandle: 'source-1',
           targetHandle: `target-${inputIndex + 1}`,
-          type: 'bezier',
+          type: 'labeled',
           animated: true,
           data: {
             itemClass: input.item,
-            // amount: input.amountPerMinute,
+            itemName: sourceItemObj?.name ?? input.item,
+            amount: input.amountPerMinute,
             solverGenerated: true
           }
         };
@@ -157,12 +160,12 @@ export function convertSolverResultToFlow(
   // Sort edges by y-position of the source node and correct handle position
   // to avoid unnecessary edge crossings
   for (const node of layoutedNodes) {
-    const connections: { edge: Edge, node: Node }[] = [];
+    const connections: { edge: Edge; node: Node }[] = [];
 
-    for (const edge of edges.filter(edge => edge.target === node.id)) {
-      const node = layoutedNodes.find(n => n.id === edge.source);
+    for (const edge of edges.filter((edge) => edge.target === node.id)) {
+      const node = layoutedNodes.find((n) => n.id === edge.source);
       // This case should not happen
-      if (!node) continue
+      if (!node) continue;
 
       connections.push({ edge, node });
     }
@@ -204,8 +207,7 @@ function layoutNodesWithDagre(nodes: Node[], edges: Edge[]): FactoryNode[] {
       width: NODE_WIDTH,
       height: NODE_HEIGHT
     });
-  for (const edge of edges)
-    dagreGraph.setEdge(edge.source, edge.target);
+  for (const edge of edges) dagreGraph.setEdge(edge.source, edge.target);
 
   // Calculate layout
   dagre.layout(dagreGraph);
@@ -222,8 +224,8 @@ function layoutNodesWithDagre(nodes: Node[], edges: Edge[]): FactoryNode[] {
       position: {
         // Dagre returns center position, adjust to top-left for SvelteFlow
         x: nodeWithPosition.x - NODE_WIDTH / 2,
-        y: nodeWithPosition.y - NODE_HEIGHT / 2,
-      },
+        y: nodeWithPosition.y - NODE_HEIGHT / 2
+      }
     };
   });
 
@@ -264,7 +266,7 @@ export function calculateResourceRequirements(rootNode: RecipeNode): Record<stri
   const requirements: Record<string, number> = {};
 
   function collectRequirements(node: RecipeNode) {
-    node.requiredInput.forEach(input => {
+    node.requiredInput.forEach((input) => {
       if (input.producer) {
         // Recursively collect from producer node
         collectRequirements(input.producer);
@@ -278,4 +280,4 @@ export function calculateResourceRequirements(rootNode: RecipeNode): Record<stri
 
   collectRequirements(rootNode);
   return requirements;
-} 
+}
