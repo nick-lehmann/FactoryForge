@@ -22,6 +22,15 @@
 	};
 
 	export type ProductionNode = Node<ProductionNodeInput & Record<string, unknown>, 'production'>;
+
+  type InputOutput = { inputs: number, outputs: number}
+  const InputOutputMap: Record<string, InputOutput> = {
+    "Desc_SmelterMk1_C": {inputs: 1, outputs: 1},
+    "Desc_ConstructorMk1_C": {inputs: 1, outputs: 1},
+    "Desc_AssemblerMk1_C": {inputs: 2, outputs: 2},
+    "Desc_ManufacturerMk1_C": {inputs: 4, outputs: 1},
+    "Desc_OilRefinery_C": {inputs: 2, outputs: 2},
+  }
 </script>
 
 <script lang="ts">
@@ -59,8 +68,14 @@
 	// const inputLabels = $derived(getInputLabels());
 	const outputLabels = $derived(getOutputLabels());
 
-	const numberOfInputs = 4;
-	const numberOfOutputs = 2;
+  function getInputOutputMapping(buildingClassName: string | undefined): InputOutput {
+    const fallback: InputOutput = {inputs: 4, outputs: 4}
+    if (buildingClassName === undefined) return fallback
+    return InputOutputMap[buildingClassName] ?? fallback
+  }
+
+	const numberOfInputs = getInputOutputMapping(data.buildingClassName).inputs
+	const numberOfOutputs = getInputOutputMapping(data.buildingClassName).outputs
 
 	const separation = [[50], [40, 60], [30, 50, 70], [20, 40, 60, 80]];
 </script>

@@ -49,18 +49,18 @@ export function convertSolverResultToFlow(
     const nodeId = currentNodeId.toString();
     currentNodeId++;
 
-    const { building, amount } = recipeNode
+    const { building, amount, recipe } = recipeNode
     const productionNode: ProductionNode = {
       id: nodeId,
       type: 'production',
       position: { x: 0, y: 0 }, // Will be set by Dagre
       data: {
-        label: recipeNode.building.name,
+        label: building.name,
         icon: 'machine',
-        buildingClassName: recipeNode.building.className,
-        recipe: recipeNode.recipe,
+        buildingClassName: building.className,
+        recipe: recipe,
         solverGenerated: true,
-        amount: recipeNode.amount
+        amount: amount
       }
     };
 
