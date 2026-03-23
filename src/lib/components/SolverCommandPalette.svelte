@@ -137,7 +137,7 @@
 										<Command.Item
 											value={item.name}
 											onSelect={() => selectItem(item)}
-											class="flex cursor-pointer items-center border-l-4 border-transparent px-4 py-3 transition-colors duration-150 hover:border-blue-500 hover:bg-blue-50 data-[selected]:border-blue-500 data-[selected]:bg-blue-100"
+											class="flex cursor-pointer items-center border-l-4 border-transparent px-4 py-3 transition-colors duration-150 hover:border-blue-500 hover:bg-blue-50 data-selected:border-blue-500 data-selected:bg-blue-100"
 										>
 											<div class="flex-1">
 												<div class="font-medium">{item.name}</div>

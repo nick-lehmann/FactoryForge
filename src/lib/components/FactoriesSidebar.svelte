@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths'
-	import { tick } from 'svelte';
 	import DeleteFactoryDialog from '$lib/components/DeleteFactoryDialog.svelte';
 	import type { WorkspaceState } from '$lib/flow/graphStorage';
 	import {
@@ -11,6 +10,7 @@
 		createFactory,
 		loadWorkspaceState,
 	} from '$lib/flow/graphStorage';
+	import FactoryOverview from './FactoryOverview.svelte'
 
 	interface Props {
 		currentFactoryId: string;
@@ -27,18 +27,6 @@
 	});
 	let deleteTargetId = $state<string | null>(null);
 	let deleteTargetName = $state('');
-	let editingId = $state<string | null>(null);
-	let editingName = $state('');
-
-	$effect(() => {
-		const id = editingId;
-		if (!id) return;
-		void tick().then(() => {
-			const el = document.getElementById(`sidebar-rename-${id}`) as HTMLInputElement | null;
-			el?.focus();
-			el?.select();
-		});
-	});
 
 	const collapsed = $derived(workspace.sidebarCollapsed === true);
 
@@ -50,27 +38,6 @@
 		workspace = applySetSidebarCollapsed(workspace, !collapsed);
 	}
 
-	function startRename(id: string, name: string) {
-		editingId = id;
-		editingName = name;
-	}
-
-	function commitRename() {
-		if (!editingId) return;
-		workspace = applyRenameFactory(workspace, editingId, editingName);
-		editingId = null;
-		editingName = '';
-	}
-
-	function cancelRename() {
-		editingId = null;
-		editingName = '';
-	}
-
-	function openDelete(id: string, name: string) {
-		deleteTargetId = id;
-		deleteTargetName = name;
-	}
 
 	function confirmDelete() {
 		if (!deleteTargetId) return;
@@ -152,6 +119,7 @@
 				<ul class="space-y-2">
 					{#each workspace.factories as factory (factory.id)}
 						{@const active = factory.id === currentFactoryId}
+
 						<li
 							class="rounded-lg border bg-white shadow-sm"
 							class:border-blue-400={active}
@@ -159,53 +127,12 @@
 							class:ring-blue-300={active}
 							class:border-gray-200={!active}
 						>
-							<div class="flex items-start gap-1 p-2">
-								<div class="min-w-0 flex-1 px-1 py-0.5">
-									{#if editingId === factory.id}
-										<input
-											id="sidebar-rename-{factory.id}"
-											bind:value={editingName}
-											class="w-full rounded border border-gray-300 px-1 py-0.5 text-sm"
-											onblur={commitRename}
-											onmousedown={(e) => e.stopPropagation()}
-											onclick={(e) => e.stopPropagation()}
-											onkeydown={(e) => {
-												if (e.key === 'Enter') commitRename();
-												if (e.key === 'Escape') cancelRename();
-											}}
-										/>
-									{:else}
-										<a
-											href={resolve(`/factories/${factory.id}`)}
-											class="block rounded text-left hover:bg-gray-50"
-											data-sveltekit-preload-data="tap"
-										>
-											<div class="truncate font-medium text-gray-900">{factory.name}</div>
-											<!-- <div class="text-xs text-gray-500">
-												{summary.length} node{summary.length === 1 ? '' : 's'}
-											</div> -->
-										</a>
-									{/if}
-								</div>
-								<div class="flex shrink-0 flex-col gap-0.5">
-									<button
-										type="button"
-										class="rounded px-1.5 py-0.5 text-xs text-gray-600 hover:bg-gray-100"
-										onclick={() => startRename(factory.id, factory.name)}
-										title="Rename"
-									>
-										Rename
-									</button>
-									<button
-										type="button"
-										class="rounded px-1.5 py-0.5 text-xs text-red-600 hover:bg-red-50"
-										onclick={() => openDelete(factory.id, factory.name)}
-										title="Delete factory"
-									>
-										Delete
-									</button>
-								</div>
-							</div>
+						    <FactoryOverview
+								name={factory.name}
+								onclick={() => goto(resolve(`/factories/${factory.id}`))}
+								onrename={(name) => workspace = applyRenameFactory(workspace, factory.id, name)}
+								ondelete={() => workspace = applyRemoveFactory(workspace, factory.id)}
+							/>
 						</li>
 					{/each}
 				</ul>
