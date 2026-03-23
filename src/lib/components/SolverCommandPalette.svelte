@@ -133,7 +133,7 @@
 									</Command.Empty>
 								{:else}
 									<!-- {#each filteredItems.slice(0, 20) as item} -->
-									{#each filteredItems as item}
+									{#each filteredItems as item (item.name)}
 										<Command.Item
 											value={item.name}
 											onSelect={() => selectItem(item)}

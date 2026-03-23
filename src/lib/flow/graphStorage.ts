@@ -1,71 +1,94 @@
 import { browser } from '$app/environment';
-import type { Edge, Node } from '@xyflow/svelte';
-import { defaultEdges, defaultNodes } from './defaultGraph.js';
+import type { GraphState, WorkspaceState } from './workspaceState.js';
+import {
+	addFactory as addFactoryPure,
+	emptyWorkspace,
+	parseWorkspaceState,
+	removeFactory as removeFactoryPure,
+	renameFactory as renameFactoryPure,
+	serializeWorkspaceState,
+	setSidebarCollapsed as setSidebarCollapsedPure,
+	updateFactoryGraph as updateFactoryGraphPure
+} from './workspaceState.js';
 
-const STORAGE_KEY = 'factoryforge-graph';
+const WORKSPACE_STORAGE_KEY = 'factoryforge-workspace';
 
-export interface GraphState {
-	nodes: Node[];
-	edges: Edge[];
-	nextNodeId: number;
-}
+export type { FactoryRecord, GraphState, WorkspaceState } from './workspaceState.js';
+export { createDefaultGraphState, emptyWorkspace, getFactoryById } from './workspaceState.js';
 
 /**
- * Load graph state from localStorage or return default state
+ * Load workspace from localStorage or empty state
  */
-export function loadGraphState(): GraphState {
+export function loadWorkspaceState(): WorkspaceState {
 	if (!browser) {
-		return {
-			nodes: [...defaultNodes],
-			edges: [...defaultEdges],
-			nextNodeId: 5
-		};
+		return emptyWorkspace();
 	}
-
 	try {
-		const stored = localStorage.getItem(STORAGE_KEY);
+		const stored = localStorage.getItem(WORKSPACE_STORAGE_KEY);
 		if (stored) {
-			const parsed = JSON.parse(stored) as GraphState;
-			// Validate that the parsed data has the expected structure
-			if (parsed.nodes && parsed.edges && typeof parsed.nextNodeId === 'number') {
-				return parsed;
-			}
+			const parsed = parseWorkspaceState(stored);
+			if (parsed) return parsed;
 		}
 	} catch (error) {
-		console.warn('Failed to load graph state from localStorage:', error);
+		console.warn('Failed to load workspace from localStorage:', error);
 	}
-
-	// Return default state if nothing was stored or if there was an error
-	return {
-		nodes: [...defaultNodes],
-		edges: [...defaultEdges],
-		nextNodeId: 5
-	};
+	return emptyWorkspace();
 }
 
 /**
- * Save graph state to localStorage
+ * Persist full workspace
  */
-export function saveGraphState(state: GraphState): void {
+export function saveWorkspaceState(state: WorkspaceState): void {
 	if (!browser) return;
-
 	try {
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+		localStorage.setItem(WORKSPACE_STORAGE_KEY, serializeWorkspaceState(state));
 	} catch (error) {
-		console.warn('Failed to save graph state to localStorage:', error);
+		console.warn('Failed to save workspace to localStorage:', error);
 	}
 }
 
 /**
- * Reset graph to default state and save to localStorage
+ * Add a factory and persist. Returns the new factory id.
  */
-export function resetGraphState(): GraphState {
-	const defaultState: GraphState = {
-		nodes: [...defaultNodes],
-		edges: [...defaultEdges],
-		nextNodeId: 5
-	};
+export function createFactory(name?: string): { workspace: WorkspaceState; factoryId: string } {
+	const current = loadWorkspaceState();
+	const next = addFactoryPure(current, name);
+	const created = next.factories[next.factories.length - 1];
+	saveWorkspaceState(next);
+	return { workspace: next, factoryId: created.id };
+}
 
-	saveGraphState(defaultState);
-	return defaultState;
+export function applyRenameFactory(
+	workspace: WorkspaceState,
+	factoryId: string,
+	name: string
+): WorkspaceState {
+	const next = renameFactoryPure(workspace, factoryId, name);
+	saveWorkspaceState(next);
+	return next;
+}
+
+export function applyRemoveFactory(workspace: WorkspaceState, factoryId: string): WorkspaceState {
+	const next = removeFactoryPure(workspace, factoryId);
+	saveWorkspaceState(next);
+	return next;
+}
+
+export function applyUpdateFactoryGraph(
+	workspace: WorkspaceState,
+	factoryId: string,
+	graph: GraphState
+): WorkspaceState {
+	const next = updateFactoryGraphPure(workspace, factoryId, graph);
+	saveWorkspaceState(next);
+	return next;
+}
+
+export function applySetSidebarCollapsed(
+	workspace: WorkspaceState,
+	collapsed: boolean
+): WorkspaceState {
+	const next = setSidebarCollapsedPure(workspace, collapsed);
+	saveWorkspaceState(next);
+	return next;
 }

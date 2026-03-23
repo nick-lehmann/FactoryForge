@@ -1,361 +1,187 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
+	import DeleteFactoryDialog from '$lib/components/DeleteFactoryDialog.svelte';
+	import type { WorkspaceState } from '$lib/flow/graphStorage';
 	import {
-		SvelteFlow,
-		MiniMap,
-		Controls,
-		Background,
-		Panel,
-		useSvelteFlow,
-		type Node,
-		type Edge,
-		type Connection,
-		type DefaultEdgeOptions,
-		MarkerType
-	} from '@xyflow/svelte';
-	import {
-		ProductionNode,
-		SourceNode,
-		LabeledEdge,
-		loadGraphState,
-		saveGraphState,
-		resetGraphState,
-		convertSolverResultToFlow,
-		type GraphState
-	} from '$lib/flow';
-	import { Satisfactory } from '$lib/satisfactory';
-	import BuildingCommandPalette from '$lib/components/BuildingCommandPalette.svelte';
-	import RecipeCommandPalette from '$lib/components/RecipeCommandPalette.svelte';
-	import ItemCommandPalette from '$lib/components/ItemCommandPalette.svelte';
-	import SolverCommandPalette from '$lib/components/SolverCommandPalette.svelte';
-	import { solve } from '$lib/solver';
-	import { satisfactoryDataStore } from '$lib/stores/satisfactoryData';
+		applyRemoveFactory,
+		applyRenameFactory,
+		createFactory,
+		loadWorkspaceState,
+	} from '$lib/flow/graphStorage';
+	import { onMount, tick } from 'svelte';
 
-	import '@xyflow/svelte/dist/style.css';
+	let workspace = $state<WorkspaceState>(emptySafe());
 
-	// Get the fitView function from SvelteFlow
-	const { fitView } = $derived(useSvelteFlow());
-
-	// Define node types mapping
-	const nodeTypes = {
-		production: ProductionNode,
-		source: SourceNode
-	};
-
-	// Define edge types mapping
-	const edgeTypes = {
-		labeled: LabeledEdge
-	};
-
-	// Define default edge options
-	const defaultEdgeOptions: DefaultEdgeOptions = {
-		type: 'labeled',
-		animated: true,
-		markerEnd: {
-			type: MarkerType.ArrowClosed,
-			width: 20,
-			height: 20
-		}
-	};
-
-	// Recipe assignment state
-	let recipeAssignmentOpen = $state(false);
-	let selectedNodeId = $state<string | null>(null);
-	let selectedBuildingClassName = $state<string | null>(null);
-
-	// Item assignment state
-	let itemAssignmentOpen = $state(false);
-	let selectedSourceNodeId = $state<string | null>(null);
-
-	// Solver state
-	let solverOpen = $state(false);
-
-	// Handle recipe assignment initiation
-	function handleRecipeAssign(nodeId: string, buildingClassName: string) {
-		console.info('Open Recipe selector');
-		selectedNodeId = nodeId;
-		selectedBuildingClassName = buildingClassName;
-		recipeAssignmentOpen = true;
+	function emptySafe(): WorkspaceState {
+		if (!browser) return { factories: [], sidebarCollapsed: false };
+		return loadWorkspaceState();
 	}
 
-	// Handle item assignment initiation
-	function handleItemAssign(nodeId: string) {
-		console.info('Open Item selector');
-		selectedSourceNodeId = nodeId;
-		itemAssignmentOpen = true;
-	}
-
-	// Load initial state from localStorage
-	let graphState = $state<GraphState>(loadGraphState());
-	$effect(() => console.debug('graphState', graphState));
-
-	// Add callbacks to loaded nodes
-	const hydratedNodes = graphState.nodes.map((node) => ({
-		...node,
-		data: {
-			...node.data,
-			onContextMenu: node.type === 'production' ? handleRecipeAssign : handleItemAssign
-		}
-	}));
-
-	let nodes = $state.raw<Node[]>(hydratedNodes);
-	let edges = $state.raw<Edge[]>(graphState.edges);
-	let nextNodeId = $state<number>(graphState.nextNodeId);
-
-	// Auto-save to localStorage whenever the graph changes
-	$effect(() => {
-		const currentState: GraphState = {
-			nodes,
-			edges,
-			nextNodeId
-		};
-		saveGraphState(currentState);
+	onMount(() => {
+		workspace = loadWorkspaceState();
 	});
 
-	// Enforce connection rules
-	const onConnect = (params: Connection) => {
-		// Guard clause - exit early if required parameters are missing
-		if (!params.source || !params.target || !params.sourceHandle || !params.targetHandle) return;
-
-		const newEdge: Edge = {
-			...params,
-			id: `e${params.source}-${params.target}`,
-			...defaultEdgeOptions
-		};
-
-		edges = [...edges, newEdge];
-	};
-
-	// Handle building selection from command palette
-	function handleBuildingSelected(building: Satisfactory.Building) {
-		const newNode: Node = {
-			id: nextNodeId.toString(),
-			type: 'production',
-			position: {
-				x: Math.random() * 400 + 200,
-				y: Math.random() * 300 + 150
-			},
-			data: {
-				label: building.name,
-				icon: 'machine',
-				buildingClassName: building.className,
-				onContextMenu: handleRecipeAssign
-			}
-		};
-
-		nodes = [...nodes, newNode];
-		nextNodeId++;
+	function refresh() {
+		workspace = loadWorkspaceState();
 	}
 
-	// Handle source node creation from command palette
-	function handleSourceSelected() {
-		const newNode: Node = {
-			id: nextNodeId.toString(),
-			type: 'source',
-			position: {
-				x: Math.random() * 400 + 200,
-				y: Math.random() * 300 + 150
-			},
-			data: {
-				label: 'Resource Source',
-				icon: 'mine',
-				onItemAssign: handleItemAssign
-			}
-		};
+	let deleteTargetId = $state<string | null>(null);
+	let deleteTargetName = $state('');
+	let editingId = $state<string | null>(null);
+	let editingName = $state('');
 
-		nodes = [...nodes, newNode];
-		nextNodeId++;
-	}
-
-	function handleRecipeSelected(recipe: Satisfactory.Recipe) {
-		if (!selectedNodeId) return;
-
-		// Update the node with the assigned recipe
-		nodes = nodes.map((node) => {
-			if (node.id === selectedNodeId) {
-				return {
-					...node,
-					data: {
-						...node.data,
-						recipe
-					}
-				};
-			}
-			return node;
+	$effect(() => {
+		const id = editingId;
+		if (!id) return;
+		void tick().then(() => {
+			const el = document.getElementById(`home-rename-${id}`) as HTMLInputElement | null;
+			el?.focus();
+			el?.select();
 		});
+	});
 
-		// Close the recipe assignment
-		selectedNodeId = null;
-		selectedBuildingClassName = null;
+	function startRename(id: string, name: string) {
+		editingId = id;
+		editingName = name;
 	}
 
-	function handleItemSelected(item: Satisfactory.Item) {
-		if (!selectedSourceNodeId) return;
-
-		// Update the source node with the assigned item
-		nodes = nodes.map((node) => {
-			if (node.id === selectedSourceNodeId) {
-				return {
-					...node,
-					data: {
-						...node.data,
-						assignedItem: item
-					}
-				};
-			}
-			return node;
-		});
-
-		// Close the item assignment
-		selectedSourceNodeId = null;
+	function commitRename() {
+		if (!editingId) return;
+		workspace = applyRenameFactory(workspace, editingId, editingName);
+		editingId = null;
+		editingName = '';
 	}
 
-	// Handle recipe assignment close
-	function handleRecipeAssignmentClose() {
-		recipeAssignmentOpen = false;
-		selectedNodeId = null;
-		selectedBuildingClassName = null;
+	function cancelRename() {
+		editingId = null;
+		editingName = '';
 	}
 
-	// Handle item assignment close
-	function handleItemAssignmentClose() {
-		itemAssignmentOpen = false;
-		selectedSourceNodeId = null;
+	function openDelete(id: string, name: string) {
+		deleteTargetId = id;
+		deleteTargetName = name;
 	}
 
-	// Reset graph to default state
-	function handleReset() {
-		const defaultState = resetGraphState();
-		// Add callbacks back to reset nodes
-		const resetNodesWithCallbacks = defaultState.nodes.map((node) => ({
-			...node,
-			data: {
-				...node.data,
-				onContextMenu: node.type === 'production' ? handleRecipeAssign : undefined,
-				onItemAssign: node.type === 'source' ? handleItemAssign : undefined
-			}
-		}));
-		nodes = resetNodesWithCallbacks;
-		edges = defaultState.edges;
-		nextNodeId = defaultState.nextNodeId;
+	function confirmDelete() {
+		if (!deleteTargetId) return;
+		workspace = applyRemoveFactory(workspace, deleteTargetId);
+		deleteTargetId = null;
+		deleteTargetName = '';
 	}
 
-	// Clear all nodes and edges
-	function handleClear() {
-		nodes = [];
-		edges = [];
-		nextNodeId = 1;
+	function cancelDelete() {
+		deleteTargetId = null;
+		deleteTargetName = '';
 	}
 
-	// Handle solver dialog open
-	function handleSolverOpen() {
-		solverOpen = true;
+	function addFactoryAndOpen() {
+		const { workspace: w, factoryId } = createFactory();
+		workspace = w;
+		goto(`/factories/${factoryId}`);
 	}
 
-	// Handle solver execution
-	function handleSolve(item: Satisfactory.Item, quantity: number) {
-		if (!$satisfactoryDataStore.data) {
-			console.error('Satisfactory data not loaded');
-			return;
-		}
-
-		try {
-			// Run the solver
-			const result = solve({ item, amount: quantity }, $satisfactoryDataStore.data);
-
-			if (!result.success || !result.rootNode) {
-				console.error('Solver failed:', result.error);
-				return;
-			}
-
-			// Convert solver result to flow nodes and edges (with Dagre layout)
-			const conversion = convertSolverResultToFlow(
-				result.rootNode,
-				$satisfactoryDataStore.data,
-				nextNodeId
-			);
-
-			// Mark solver-generated content
-			// const { nodes: markedNodes, edges: markedEdges } = markSolverGenerated(
-			// 	conversion.nodes,
-			// 	conversion.edges
-			// );
-
-			// Add callbacks to new nodes
-			const nodesWithCallbacks = conversion.nodes.map((node) => ({
-				...node,
-				data: {
-					...node.data,
-					onContextMenu: node.type === 'production' ? handleRecipeAssign : undefined,
-					onItemAssign: node.type === 'source' ? handleItemAssign : undefined
-				}
-			}));
-
-			nodes = nodesWithCallbacks;
-			edges = conversion.edges;
-			nextNodeId = 0;
-			// nodes = [...nodes, ...nodesWithCallbacks];
-			// edges = [...edges, ...conversion.edges];
-			// nextNodeId = conversion.nextNodeId;
-
-			// Refit the view to show all nodes including the newly generated ones
-			window.requestAnimationFrame(() => fitView());
-
-			console.log(`Successfully generated production chain for ${item.name} (${quantity}/min)`);
-		} catch (error) {
-			console.error('Error during solve:', error);
-			// TODO: Show error toast/notification
-		}
+	function openFactory(id: string) {
+		goto(`/factories/${id}`);
 	}
-
-	// Handle solver dialog close
-	const handleSolverClose = () => {
-		solverOpen = false;
-	};
 </script>
 
-<BuildingCommandPalette
-	onBuildingSelected={handleBuildingSelected}
-	onSourceSelected={handleSourceSelected}
-	onSolverSelected={handleSolverOpen}
-/>
-<RecipeCommandPalette
-	bind:open={recipeAssignmentOpen}
-	buildingClassName={selectedBuildingClassName}
-	onRecipeSelected={handleRecipeSelected}
-	onClose={handleRecipeAssignmentClose}
-/>
-<ItemCommandPalette
-	open={itemAssignmentOpen}
-	onItemSelected={handleItemSelected}
-	onClose={handleItemAssignmentClose}
-/>
-<SolverCommandPalette open={solverOpen} onSolve={handleSolve} onClose={handleSolverClose} />
+<svelte:window onfocus={refresh} />
 
-<div style:width="100%" style:height="100vh">
-	<SvelteFlow bind:nodes bind:edges {nodeTypes} {edgeTypes} onconnect={onConnect} {defaultEdgeOptions} fitView>
-		<MiniMap />
-		<Controls />
-		<Background />
-		<Panel position="top-left">
-			<h1>Factory Production Flow</h1>
-			<p class="mt-1 text-sm text-gray-600">Press Cmd+K to add buildings/sources</p>
-			<div class="mt-2 flex gap-2">
+<div class="min-h-screen bg-gray-100">
+	<div class="mx-auto max-w-5xl px-4 py-8">
+		<header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+			<div>
+				<h1 class="text-3xl font-bold text-gray-900">Your factories</h1>
+				<p class="mt-1 text-gray-600">
+					Manage all production graphs. Open a factory to edit the flow, or create a new one.
+				</p>
+			</div>
+			<button
+				type="button"
+				onclick={addFactoryAndOpen}
+				class="shrink-0 rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white shadow hover:bg-blue-700"
+			>
+				New factory
+			</button>
+		</header>
+
+		{#if workspace.factories.length === 0}
+			<div
+				class="rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center shadow-sm"
+			>
+				<p class="text-lg text-gray-600">You don’t have any factories yet.</p>
+				<p class="mt-2 text-sm text-gray-500">Create one to start building your production flow.</p>
 				<button
-					onclick={handleReset}
-					class="rounded border border-red-300 bg-red-100 px-3 py-1 text-xs text-red-700 transition-colors hover:bg-red-200"
+					type="button"
+					onclick={addFactoryAndOpen}
+					class="mt-6 rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white hover:bg-blue-700"
 				>
-					Reset to Default
-				</button>
-				<button
-					onclick={handleClear}
-					class="rounded border border-orange-300 bg-orange-100 px-3 py-1 text-xs text-orange-700 transition-colors hover:bg-orange-200"
-				>
-					Clear All
+					Create your first factory
 				</button>
 			</div>
-		</Panel>
-	</SvelteFlow>
+		{:else}
+			<ul class="space-y-6">
+				{#each workspace.factories as factory (factory.id)}
+					<li class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+						<div class="flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
+							<div class="min-w-0 flex-1">
+								{#if editingId === factory.id}
+									<input
+										id="home-rename-{factory.id}"
+										bind:value={editingName}
+										class="mb-2 w-full max-w-md rounded border border-gray-300 px-2 py-1 text-lg font-semibold"
+										onblur={commitRename}
+										onkeydown={(e) => {
+											if (e.key === 'Enter') commitRename();
+											if (e.key === 'Escape') cancelRename();
+										}}
+									/>
+								{:else}
+									<h2 class="text-xl font-semibold text-gray-900">{factory.name}</h2>
+								{/if}
+								<p class="text-sm text-gray-500">
+									Updated
+									{new Date(factory.updatedAt).toLocaleString()}
+								</p>
+							</div>
+							<div class="flex flex-wrap gap-2">
+								<button
+									type="button"
+									onclick={() => openFactory(factory.id)}
+									class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+								>
+									Open
+								</button>
+								<button
+									type="button"
+									onclick={() => startRename(factory.id, factory.name)}
+									class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+								>
+									Rename
+								</button>
+								<button
+									type="button"
+									onclick={() => openDelete(factory.id, factory.name)}
+									class="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700 hover:bg-red-100"
+								>
+									Delete
+								</button>
+							</div>
+						</div>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+	</div>
 </div>
+
+<DeleteFactoryDialog
+	open={deleteTargetId !== null}
+	factoryName={deleteTargetName}
+	onConfirm={confirmDelete}
+	onCancel={cancelDelete}
+/>
 
 <style>
 	:global([data-bits-dialog-overlay]) {
