@@ -85,7 +85,11 @@ export function createFactoryRecord(name: string): FactoryRecord {
 	return {
 		id: newFactoryId(),
 		name: name.trim() || 'Untitled factory',
-		graph: createDefaultGraphState(),
+		graph: {
+			edges: [],
+			nodes: [],
+			nextNodeId: 0
+		},
 		createdAt: now,
 		updatedAt: now
 	};

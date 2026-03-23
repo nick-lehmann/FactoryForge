@@ -10,6 +10,7 @@
 		loadWorkspaceState,
 	} from '$lib/flow/graphStorage';
 	import { onMount, tick } from 'svelte';
+	import { resolve } from '$app/paths';
 
 	let workspace = $state<WorkspaceState>(emptySafe());
 
@@ -78,7 +79,7 @@
 	function addFactoryAndOpen() {
 		const { workspace: w, factoryId } = createFactory();
 		workspace = w;
-		goto(`/factories/${factoryId}`);
+		goto(resolve(`/factories/${factoryId}`));
 	}
 
 	function openFactory(id: string) {

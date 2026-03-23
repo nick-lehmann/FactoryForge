@@ -20,7 +20,6 @@
 		LabeledEdge,
 		applyUpdateFactoryGraph,
 		convertSolverResultToFlow,
-		createDefaultGraphState,
 		getFactoryById,
 		loadWorkspaceState,
 		type GraphState
