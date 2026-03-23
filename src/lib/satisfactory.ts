@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 // Import all namespaces
 import { z } from 'zod';
 
@@ -126,6 +127,35 @@ export namespace Satisfactory {
 		} catch (error) {
 			console.error('Error loading Satisfactory data:', error);
 			throw new Error('Failed to load Satisfactory data');
+		}
+	}
+
+	// Function to get all buildable items (non-raw materials)
+	export async function getBuildableItems() {
+		try {
+			const data = await Satisfactory.loadData(fetch);
+			const resourceItems = new Set(Object.values(data.resources).map((r) => r.item));
+
+			const buildableItems = Object.values(data.items)
+				.filter((item) => !resourceItems.has(item.className))
+				.filter((item) => {
+					// Check if there's at least one recipe that can produce this item
+					return Object.values(data.recipes).some(
+						(recipe) =>
+							recipe.products.some((product) => product.item === item.className) &&
+							!recipe.forBuilding &&
+							!recipe.inWorkshop &&
+							recipe.producedIn.length > 0
+					);
+				})
+				.sort((a, b) => a.name.localeCompare(b.name));
+
+			console.debug('Buildable items:', buildableItems);
+
+			return buildableItems;
+		} catch (error) {
+			console.error('Failed to get buildable items:', error);
+			return [];
 		}
 	}
 }

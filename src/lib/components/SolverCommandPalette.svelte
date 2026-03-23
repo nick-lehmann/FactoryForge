@@ -3,7 +3,6 @@
 	import { Satisfactory } from '$lib/satisfactory';
 	import { onMount } from 'svelte';
 	import Fuse from 'fuse.js';
-	import { getBuildableItems } from '$lib/solver-demo';
 
 	// Props
 	interface Props {
@@ -36,7 +35,7 @@
 	onMount(async () => {
 		try {
 			isLoading = true;
-			buildableItems = await getBuildableItems();
+			buildableItems = await Satisfactory.getBuildableItems();
 			filteredItems = buildableItems;
 			fuse = new Fuse(buildableItems, fuseOptions);
 		} catch (error) {
