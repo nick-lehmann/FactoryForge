@@ -49,7 +49,7 @@ export function convertSolverResultToFlow(
     const nodeId = currentNodeId.toString();
     currentNodeId++;
 
-    const { building, amount, recipe } = recipeNode
+    const { building, buildingCount: amount, recipe } = recipeNode
     const productionNode: ProductionNode = {
       id: nodeId,
       type: 'production',
@@ -70,8 +70,8 @@ export function convertSolverResultToFlow(
     convertedNodes.set(recipeNode, nodeId);
 
     // Process inputs and create source nodes or child production nodes
-    for (let inputIndex = 0; inputIndex < recipeNode.requiredInput.length; inputIndex++) {
-      const input = recipeNode.requiredInput[inputIndex];
+    for (let inputIndex = 0; inputIndex < recipeNode.requiredInputs.length; inputIndex++) {
+      const input = recipeNode.requiredInputs[inputIndex];
 
       if (input.producer) {
         // This input is produced by a producer node
@@ -266,7 +266,7 @@ export function calculateResourceRequirements(rootNode: RecipeNode): Record<stri
   const requirements: Record<string, number> = {};
 
   function collectRequirements(node: RecipeNode) {
-    node.requiredInput.forEach((input) => {
+    node.requiredInputs.forEach((input) => {
       if (input.producer) {
         // Recursively collect from producer node
         collectRequirements(input.producer);

@@ -1,0 +1,490 @@
+{
+  "rootNode": {
+    "amountPerMinute": 10,
+    "building": {
+      "className": "Desc_AssemblerMk1_C",
+      "description": "Crafts two parts into another part.
+
+Can be automated by feeding parts into it with a conveyor belt connected to the input. The produced parts can be automatically extracted by connecting a conveyor belt to the output.",
+      "metadata": {
+        "manufacturingSpeed": 1,
+        "powerConsumption": 15,
+        "powerConsumptionExponent": 1.321929,
+      },
+      "name": "Assembler",
+      "slug": "assembler",
+    },
+    "buildingCount": 5,
+    "item": "Desc_ModularFrame_C",
+    "recipe": {
+      "alternate": false,
+      "className": "Recipe_ModularFrame_C",
+      "forBuilding": false,
+      "inHand": true,
+      "inWorkshop": false,
+      "ingredients": [
+        {
+          "amount": 3,
+          "item": "Desc_IronPlateReinforced_C",
+        },
+        {
+          "amount": 12,
+          "item": "Desc_IronRod_C",
+        },
+      ],
+      "isVariablePower": false,
+      "maxPower": 1,
+      "minPower": 0,
+      "name": "Modular Frame",
+      "producedIn": [
+        "Desc_AssemblerMk1_C",
+      ],
+      "products": [
+        {
+          "amount": 2,
+          "item": "Desc_ModularFrame_C",
+        },
+      ],
+      "slug": "recipe-modularframe-c",
+      "time": 60,
+    },
+    "requiredInputs": [
+      {
+        "amountPerMinute": 15,
+        "item": "Desc_IronPlateReinforced_C",
+        "producer": {
+          "amountPerMinute": 15,
+          "building": {
+            "className": "Desc_AssemblerMk1_C",
+            "description": "Crafts two parts into another part.
+
+Can be automated by feeding parts into it with a conveyor belt connected to the input. The produced parts can be automatically extracted by connecting a conveyor belt to the output.",
+            "metadata": {
+              "manufacturingSpeed": 1,
+              "powerConsumption": 15,
+              "powerConsumptionExponent": 1.321929,
+            },
+            "name": "Assembler",
+            "slug": "assembler",
+          },
+          "buildingCount": 3,
+          "item": "Desc_IronPlateReinforced_C",
+          "recipe": {
+            "alternate": false,
+            "className": "Recipe_IronPlateReinforced_C",
+            "forBuilding": false,
+            "inHand": true,
+            "inWorkshop": false,
+            "ingredients": [
+              {
+                "amount": 6,
+                "item": "Desc_IronPlate_C",
+              },
+              {
+                "amount": 12,
+                "item": "Desc_IronScrew_C",
+              },
+            ],
+            "isVariablePower": false,
+            "maxPower": 1,
+            "minPower": 0,
+            "name": "Reinforced Iron Plate",
+            "producedIn": [
+              "Desc_AssemblerMk1_C",
+            ],
+            "products": [
+              {
+                "amount": 1,
+                "item": "Desc_IronPlateReinforced_C",
+              },
+            ],
+            "slug": "recipe-ironplatereinforced-c",
+            "time": 12,
+          },
+          "requiredInputs": [
+            {
+              "amountPerMinute": 90,
+              "item": "Desc_IronPlate_C",
+              "producer": {
+                "amountPerMinute": 90,
+                "building": {
+                  "className": "Desc_ConstructorMk1_C",
+                  "description": "Crafts one part into another part.
+
+Can be automated by feeding parts into it with a conveyor belt connected to the input. The produced parts can be automatically extracted by connecting a conveyor belt to the output.",
+                  "metadata": {
+                    "manufacturingSpeed": 1,
+                    "powerConsumption": 4,
+                    "powerConsumptionExponent": 1.321929,
+                  },
+                  "name": "Constructor",
+                  "slug": "constructor",
+                },
+                "buildingCount": 4.5,
+                "item": "Desc_IronPlate_C",
+                "recipe": {
+                  "alternate": false,
+                  "className": "Recipe_IronPlate_C",
+                  "forBuilding": false,
+                  "inHand": true,
+                  "inWorkshop": false,
+                  "ingredients": [
+                    {
+                      "amount": 3,
+                      "item": "Desc_IronIngot_C",
+                    },
+                  ],
+                  "isVariablePower": false,
+                  "maxPower": 1,
+                  "minPower": 0,
+                  "name": "Iron Plate",
+                  "producedIn": [
+                    "Desc_ConstructorMk1_C",
+                  ],
+                  "products": [
+                    {
+                      "amount": 2,
+                      "item": "Desc_IronPlate_C",
+                    },
+                  ],
+                  "slug": "recipe-ironplate-c",
+                  "time": 6,
+                },
+                "requiredInputs": [
+                  {
+                    "amountPerMinute": 135,
+                    "item": "Desc_IronIngot_C",
+                    "producer": {
+                      "amountPerMinute": 240,
+                      "building": {
+                        "className": "Desc_SmelterMk1_C",
+                        "description": "Smelts ore into ingots.
+
+Can be automated by feeding ore into it with a conveyor belt connected to the input. The produced ingots can be automatically extracted by connecting a conveyor belt to the output.",
+                        "metadata": {
+                          "manufacturingSpeed": 1,
+                          "powerConsumption": 4,
+                          "powerConsumptionExponent": 1.321929,
+                        },
+                        "name": "Smelter",
+                        "slug": "smelter",
+                      },
+                      "buildingCount": 8,
+                      "item": "Desc_IronIngot_C",
+                      "recipe": {
+                        "alternate": false,
+                        "className": "Recipe_IngotIron_C",
+                        "forBuilding": false,
+                        "inHand": true,
+                        "inWorkshop": false,
+                        "ingredients": [
+                          {
+                            "amount": 1,
+                            "item": "Desc_OreIron_C",
+                          },
+                        ],
+                        "isVariablePower": false,
+                        "maxPower": 1,
+                        "minPower": 0,
+                        "name": "Iron Ingot",
+                        "producedIn": [
+                          "Desc_SmelterMk1_C",
+                        ],
+                        "products": [
+                          {
+                            "amount": 1,
+                            "item": "Desc_IronIngot_C",
+                          },
+                        ],
+                        "slug": "recipe-ingotiron-c",
+                        "time": 2,
+                      },
+                      "requiredInputs": [
+                        {
+                          "amountPerMinute": 240,
+                          "item": "Desc_OreIron_C",
+                          "producer": undefined,
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              "amountPerMinute": 180,
+              "item": "Desc_IronScrew_C",
+              "producer": {
+                "amountPerMinute": 180,
+                "building": {
+                  "className": "Desc_ConstructorMk1_C",
+                  "description": "Crafts one part into another part.
+
+Can be automated by feeding parts into it with a conveyor belt connected to the input. The produced parts can be automatically extracted by connecting a conveyor belt to the output.",
+                  "metadata": {
+                    "manufacturingSpeed": 1,
+                    "powerConsumption": 4,
+                    "powerConsumptionExponent": 1.321929,
+                  },
+                  "name": "Constructor",
+                  "slug": "constructor",
+                },
+                "buildingCount": 4.5,
+                "item": "Desc_IronScrew_C",
+                "recipe": {
+                  "alternate": false,
+                  "className": "Recipe_Screw_C",
+                  "forBuilding": false,
+                  "inHand": true,
+                  "inWorkshop": false,
+                  "ingredients": [
+                    {
+                      "amount": 1,
+                      "item": "Desc_IronRod_C",
+                    },
+                  ],
+                  "isVariablePower": false,
+                  "maxPower": 1,
+                  "minPower": 0,
+                  "name": "Screw",
+                  "producedIn": [
+                    "Desc_ConstructorMk1_C",
+                  ],
+                  "products": [
+                    {
+                      "amount": 4,
+                      "item": "Desc_IronScrew_C",
+                    },
+                  ],
+                  "slug": "recipe-screw-c",
+                  "time": 6,
+                },
+                "requiredInputs": [
+                  {
+                    "amountPerMinute": 45,
+                    "item": "Desc_IronRod_C",
+                    "producer": {
+                      "amountPerMinute": 105,
+                      "building": {
+                        "className": "Desc_ConstructorMk1_C",
+                        "description": "Crafts one part into another part.
+
+Can be automated by feeding parts into it with a conveyor belt connected to the input. The produced parts can be automatically extracted by connecting a conveyor belt to the output.",
+                        "metadata": {
+                          "manufacturingSpeed": 1,
+                          "powerConsumption": 4,
+                          "powerConsumptionExponent": 1.321929,
+                        },
+                        "name": "Constructor",
+                        "slug": "constructor",
+                      },
+                      "buildingCount": 7,
+                      "item": "Desc_IronRod_C",
+                      "recipe": {
+                        "alternate": false,
+                        "className": "Recipe_IronRod_C",
+                        "forBuilding": false,
+                        "inHand": true,
+                        "inWorkshop": false,
+                        "ingredients": [
+                          {
+                            "amount": 1,
+                            "item": "Desc_IronIngot_C",
+                          },
+                        ],
+                        "isVariablePower": false,
+                        "maxPower": 1,
+                        "minPower": 0,
+                        "name": "Iron Rod",
+                        "producedIn": [
+                          "Desc_ConstructorMk1_C",
+                        ],
+                        "products": [
+                          {
+                            "amount": 1,
+                            "item": "Desc_IronRod_C",
+                          },
+                        ],
+                        "slug": "recipe-ironrod-c",
+                        "time": 4,
+                      },
+                      "requiredInputs": [
+                        {
+                          "amountPerMinute": 105,
+                          "item": "Desc_IronIngot_C",
+                          "producer": {
+                            "amountPerMinute": 240,
+                            "building": {
+                              "className": "Desc_SmelterMk1_C",
+                              "description": "Smelts ore into ingots.
+
+Can be automated by feeding ore into it with a conveyor belt connected to the input. The produced ingots can be automatically extracted by connecting a conveyor belt to the output.",
+                              "metadata": {
+                                "manufacturingSpeed": 1,
+                                "powerConsumption": 4,
+                                "powerConsumptionExponent": 1.321929,
+                              },
+                              "name": "Smelter",
+                              "slug": "smelter",
+                            },
+                            "buildingCount": 8,
+                            "item": "Desc_IronIngot_C",
+                            "recipe": {
+                              "alternate": false,
+                              "className": "Recipe_IngotIron_C",
+                              "forBuilding": false,
+                              "inHand": true,
+                              "inWorkshop": false,
+                              "ingredients": [
+                                {
+                                  "amount": 1,
+                                  "item": "Desc_OreIron_C",
+                                },
+                              ],
+                              "isVariablePower": false,
+                              "maxPower": 1,
+                              "minPower": 0,
+                              "name": "Iron Ingot",
+                              "producedIn": [
+                                "Desc_SmelterMk1_C",
+                              ],
+                              "products": [
+                                {
+                                  "amount": 1,
+                                  "item": "Desc_IronIngot_C",
+                                },
+                              ],
+                              "slug": "recipe-ingotiron-c",
+                              "time": 2,
+                            },
+                            "requiredInputs": [
+                              {
+                                "amountPerMinute": 240,
+                                "item": "Desc_OreIron_C",
+                                "producer": undefined,
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+      {
+        "amountPerMinute": 60,
+        "item": "Desc_IronRod_C",
+        "producer": {
+          "amountPerMinute": 105,
+          "building": {
+            "className": "Desc_ConstructorMk1_C",
+            "description": "Crafts one part into another part.
+
+Can be automated by feeding parts into it with a conveyor belt connected to the input. The produced parts can be automatically extracted by connecting a conveyor belt to the output.",
+            "metadata": {
+              "manufacturingSpeed": 1,
+              "powerConsumption": 4,
+              "powerConsumptionExponent": 1.321929,
+            },
+            "name": "Constructor",
+            "slug": "constructor",
+          },
+          "buildingCount": 7,
+          "item": "Desc_IronRod_C",
+          "recipe": {
+            "alternate": false,
+            "className": "Recipe_IronRod_C",
+            "forBuilding": false,
+            "inHand": true,
+            "inWorkshop": false,
+            "ingredients": [
+              {
+                "amount": 1,
+                "item": "Desc_IronIngot_C",
+              },
+            ],
+            "isVariablePower": false,
+            "maxPower": 1,
+            "minPower": 0,
+            "name": "Iron Rod",
+            "producedIn": [
+              "Desc_ConstructorMk1_C",
+            ],
+            "products": [
+              {
+                "amount": 1,
+                "item": "Desc_IronRod_C",
+              },
+            ],
+            "slug": "recipe-ironrod-c",
+            "time": 4,
+          },
+          "requiredInputs": [
+            {
+              "amountPerMinute": 105,
+              "item": "Desc_IronIngot_C",
+              "producer": {
+                "amountPerMinute": 240,
+                "building": {
+                  "className": "Desc_SmelterMk1_C",
+                  "description": "Smelts ore into ingots.
+
+Can be automated by feeding ore into it with a conveyor belt connected to the input. The produced ingots can be automatically extracted by connecting a conveyor belt to the output.",
+                  "metadata": {
+                    "manufacturingSpeed": 1,
+                    "powerConsumption": 4,
+                    "powerConsumptionExponent": 1.321929,
+                  },
+                  "name": "Smelter",
+                  "slug": "smelter",
+                },
+                "buildingCount": 8,
+                "item": "Desc_IronIngot_C",
+                "recipe": {
+                  "alternate": false,
+                  "className": "Recipe_IngotIron_C",
+                  "forBuilding": false,
+                  "inHand": true,
+                  "inWorkshop": false,
+                  "ingredients": [
+                    {
+                      "amount": 1,
+                      "item": "Desc_OreIron_C",
+                    },
+                  ],
+                  "isVariablePower": false,
+                  "maxPower": 1,
+                  "minPower": 0,
+                  "name": "Iron Ingot",
+                  "producedIn": [
+                    "Desc_SmelterMk1_C",
+                  ],
+                  "products": [
+                    {
+                      "amount": 1,
+                      "item": "Desc_IronIngot_C",
+                    },
+                  ],
+                  "slug": "recipe-ingotiron-c",
+                  "time": 2,
+                },
+                "requiredInputs": [
+                  {
+                    "amountPerMinute": 240,
+                    "item": "Desc_OreIron_C",
+                    "producer": undefined,
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ],
+  },
+  "success": true,
+}

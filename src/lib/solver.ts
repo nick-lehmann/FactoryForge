@@ -9,10 +9,15 @@
 import { Satisfactory } from './satisfactory';
 
 export type RecipeNode = {
+	item: string;
+	amountPerMinute: number;
+
 	recipe: Satisfactory.Recipe;
+
 	building: Satisfactory.Building;
-	amount: number; // Number of buildings required for this recipe
-	requiredInput: Array<{
+	buildingCount: number; // Number of buildings required for this recipe
+
+	requiredInputs: Array<{
 		item: string;
 		amountPerMinute: number;
 		producer?: RecipeNode; // Single node that produces this input (deduplicated)
@@ -63,17 +68,32 @@ function findBuildingForRecipe(
 	return data.buildings[buildingClassName] || null;
 }
 
-/**
- * Calculate production rate for a recipe (items per minute)
- */
-function calculateProductionRate(
-	recipe: Satisfactory.Recipe,
-	building: Satisfactory.Building
-): number {
-	// Items per minute = (products per cycle / cycle time in seconds) * 60
-	const cycleTimeMinutes = recipe.time / 60;
-	const manufacturingSpeed = building.metadata.manufacturingSpeed;
-	return manufacturingSpeed / cycleTimeMinutes;
+function bumpProducerOutput(node: RecipeNode, outputDelta: number) {
+	if (outputDelta === 0) return;
+
+	const previousAmountPerMinute = node.amountPerMinute;
+	const newAmountPerMinute = previousAmountPerMinute + outputDelta;
+	const factor = newAmountPerMinute / previousAmountPerMinute;
+	const newBuildingCount = node.buildingCount * factor;
+
+	console.debug(`Scale up ${node.item} by ${factor}`, {
+		amountPerMinute: { new: newAmountPerMinute, old: previousAmountPerMinute },
+		building: { new: newBuildingCount, old: node.buildingCount }
+	});
+
+	node.amountPerMinute = newAmountPerMinute;
+	node.buildingCount = newBuildingCount;
+
+	for (const input of node.requiredInputs) {
+		const previousInputAmount = input.amountPerMinute;
+		const newInputAmount = previousInputAmount * factor;
+		const inputDelta = newInputAmount - previousInputAmount;
+
+		input.amountPerMinute = newInputAmount;
+
+		if (!input.producer) continue;
+		bumpProducerOutput(input.producer, inputDelta);
+	}
 }
 
 /**
@@ -97,8 +117,12 @@ function solveRecursive(
 
 	// Check if this item is already being produced (deduplication)
 	if (producedItems.has(targetItem)) {
-		console.debug('Resuing node for', targetItem);
-		return producedItems.get(targetItem)!;
+		const node = producedItems.get(targetItem)!;
+
+		console.debug(`Reusing node for ${targetItem}`);
+		bumpProducerOutput(node, targetAmountPerMinute);
+
+		return node;
 	}
 
 	// Find a recipe that can produce this item
@@ -143,10 +167,12 @@ function solveRecursive(
 
 	// Create the node (but don't populate requiredInput yet to avoid circular references)
 	const node: RecipeNode = {
+		item: targetItem,
+		amountPerMinute: targetAmountPerMinute,
 		recipe,
-		amount: neededBuildings,
+		buildingCount: neededBuildings,
 		building,
-		requiredInput: []
+		requiredInputs: []
 	};
 
 	// Add to produced items map immediately to enable deduplication
@@ -177,7 +203,7 @@ function solveRecursive(
 	});
 
 	// Now populate the requiredInput
-	node.requiredInput = requiredInput;
+	node.requiredInputs = requiredInput;
 
 	return node;
 }
