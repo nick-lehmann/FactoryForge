@@ -24,6 +24,30 @@ export type RecipeNode = {
 	}>;
 };
 
+/**
+ * Find the amount of input items required into this production chain.
+ * Only considers items that are not produced as part of this chain => resources.
+ */
+export function getInputAmount(
+	node: RecipeNode,
+	name: string,
+	visited: Set<RecipeNode> = new Set()
+): number {
+	if (visited.has(node)) return 0;
+	visited.add(node);
+
+	let amount = 0;
+	for (const input of node.requiredInputs) {
+		if (input.producer === undefined) {
+			if (input.item === name) amount += input.amountPerMinute;
+		} else {
+			amount += getInputAmount(input.producer, name, visited);
+		}
+	}
+
+	return amount;
+}
+
 export type SolverResult = {
 	success: boolean;
 	rootNode?: RecipeNode;

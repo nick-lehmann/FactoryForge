@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import * as fs from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { Satisfactory } from './satisfactory';
-import { solve, type RecipeNode } from './solver';
+import { getInputAmount, solve } from './solver';
 
 const rawData = await fs.readFile('static/data.json', { encoding: 'utf-8' });
 const parsedData = JSON.parse(rawData);
@@ -122,30 +122,6 @@ describe('Solver', () => {
 			},
 			mockData
 		);
-
-		/**
-		 * Find the amount of input items required into this production chain.
-		 * Only considers items that are not produced as part of this chain => resources.
-		 */
-		function getInputAmount(
-			node: RecipeNode,
-			name: string,
-			visited: Set<RecipeNode> = new Set()
-		): number {
-			if (visited.has(node)) return 0;
-			visited.add(node);
-
-			let amount = 0;
-			for (const input of node.requiredInputs) {
-				if (input.producer === undefined) {
-					if (input.item === name) amount += input.amountPerMinute;
-				} else {
-					amount += getInputAmount(input.producer, name, visited);
-				}
-			}
-
-			return amount;
-		}
 
 		expect(result.success).toBeTruthy();
 		if (result.rootNode) expect(getInputAmount(result.rootNode, 'Desc_OreIron_C')).toBe(240);
