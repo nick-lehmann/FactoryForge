@@ -151,7 +151,7 @@
 								</div>
 							</Command.Item>
 
-							{#each filteredBuildings as building}
+							{#each filteredBuildings as building (building.className)}
 								<Command.Item
 									value={building.name}
 									onSelect={() => selectBuilding(building)}

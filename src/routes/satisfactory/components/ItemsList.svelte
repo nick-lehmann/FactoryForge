@@ -103,7 +103,7 @@
 		</div>
 	{:else}
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-			{#each sortedItems as item}
+			{#each sortedItems as item (item.key)}
 				<div class="rounded border p-4 shadow-sm">
 					<div class="mb-3 border-b pb-2">
 						<h3 class="text-lg font-bold">{item.name}</h3>
@@ -125,7 +125,7 @@
 						<div>
 							<h4 class="mb-1 text-sm font-semibold">Production Recipes:</h4>
 							<div class="space-y-3">
-								{#each item.producedByRecipes as recipe}
+								{#each item.producedByRecipes as recipe (recipe.key)}
 									<div class="rounded bg-gray-50 p-2 text-sm">
 										<div class="font-medium">{recipe.name}</div>
 										<div class="my-1 text-xs">
@@ -137,7 +137,7 @@
 											<div>
 												<div class="text-xs font-semibold">Ingredients:</div>
 												<ul class="list-disc pl-4 text-xs">
-													{#each recipe.enrichedIngredients as ingredient}
+													{#each recipe.enrichedIngredients as ingredient (`${recipe.key}-ing-${ingredient.itemSlug}`)}
 														<li>{ingredient.amount} × {ingredient.itemName}</li>
 													{/each}
 												</ul>
@@ -146,7 +146,7 @@
 											<div>
 												<div class="text-xs font-semibold">Products:</div>
 												<ul class="list-disc pl-4 text-xs">
-													{#each recipe.enrichedProducts as product}
+													{#each recipe.enrichedProducts as product (`${recipe.key}-prod-${product.itemSlug}`)}
 														<li>{product.amount} × {product.itemName}</li>
 													{/each}
 												</ul>

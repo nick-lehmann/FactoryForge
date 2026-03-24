@@ -14,8 +14,8 @@
 		// Recipe assigned to building
 		recipe?: Satisfactory.Recipe;
 
-    // How often you need this building
-    amount?: number
+		// How often you need this building
+		amount?: number;
 
 		// Context menu handler
 		onContextMenu?: (nodeId: string, buildingClassName: string) => void;
@@ -23,20 +23,19 @@
 
 	export type ProductionNode = Node<ProductionNodeInput & Record<string, unknown>, 'production'>;
 
-  type InputOutput = { inputs: number, outputs: number}
-  const InputOutputMap: Record<string, InputOutput> = {
-    "Desc_SmelterMk1_C": {inputs: 1, outputs: 1},
-    "Desc_ConstructorMk1_C": {inputs: 1, outputs: 1},
-    "Desc_AssemblerMk1_C": {inputs: 2, outputs: 2},
-    "Desc_ManufacturerMk1_C": {inputs: 4, outputs: 1},
-    "Desc_OilRefinery_C": {inputs: 2, outputs: 2},
-  }
+	type InputOutput = { inputs: number; outputs: number };
+	const InputOutputMap: Record<string, InputOutput> = {
+		Desc_SmelterMk1_C: { inputs: 1, outputs: 1 },
+		Desc_ConstructorMk1_C: { inputs: 1, outputs: 1 },
+		Desc_AssemblerMk1_C: { inputs: 2, outputs: 2 },
+		Desc_ManufacturerMk1_C: { inputs: 4, outputs: 1 },
+		Desc_OilRefinery_C: { inputs: 2, outputs: 2 }
+	};
 </script>
 
 <script lang="ts">
 	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
 	import { Satisfactory } from '$lib/satisfactory';
-	import { items } from '$lib/stores/satisfactoryData';
 
 	interface Props {
 		id: string;
@@ -53,36 +52,24 @@
 		}
 	}
 
-	const getItemName = (itemClassName: string): string => {
-		if (!$items) return itemClassName;
+	function getInputOutputMapping(buildingClassName: string | undefined): InputOutput {
+		const fallback: InputOutput = { inputs: 4, outputs: 4 };
+		if (buildingClassName === undefined) return fallback;
+		return InputOutputMap[buildingClassName] ?? fallback;
+	}
 
-		const item = Object.values($items).find((item) => item.className === itemClassName);
-		return item?.name || itemClassName;
-	};
+	const numberOfInputs = getInputOutputMapping(data.buildingClassName).inputs;
+	const numberOfOutputs = getInputOutputMapping(data.buildingClassName).outputs;
 
-	const getOutputLabels = (): string[] => {
-		if (!data.recipe) return [];
-		return data.recipe.products.map((product) => getItemName(product.item));
-	};
-
-	// const inputLabels = $derived(getInputLabels());
-	const outputLabels = $derived(getOutputLabels());
-
-  function getInputOutputMapping(buildingClassName: string | undefined): InputOutput {
-    const fallback: InputOutput = {inputs: 4, outputs: 4}
-    if (buildingClassName === undefined) return fallback
-    return InputOutputMap[buildingClassName] ?? fallback
-  }
-
-	const numberOfInputs = getInputOutputMapping(data.buildingClassName).inputs
-	const numberOfOutputs = getInputOutputMapping(data.buildingClassName).outputs
+	const inputIndices = [...Array(numberOfInputs).keys()];
+	const outputIndices = [...Array(numberOfOutputs).keys()];
 
 	const separation = [[50], [40, 60], [30, 50, 70], [20, 40, 60, 80]];
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="production-node" oncontextmenu={handleContextMenu}>
-	{#each { length: numberOfInputs } as _, index}
+	{#each inputIndices as index (index)}
 		<Handle
 			type="target"
 			position={Position.Left}
@@ -124,12 +111,12 @@
 		{#if data.recipe}
 			<div class="recipe">{data.recipe.name}</div>
 		{/if}
-    {#if data.amount}
-      <div>x{data.amount.toFixed(2)}</div>
-    {/if}
+		{#if data.amount}
+			<div>x{data.amount.toFixed(2)}</div>
+		{/if}
 	</div>
 
-	{#each { length: numberOfOutputs } as _, index}
+	{#each outputIndices as index (index)}
 		<Handle
 			type="source"
 			position={Position.Right}

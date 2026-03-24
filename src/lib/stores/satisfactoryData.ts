@@ -99,7 +99,7 @@ export const productionBuildings: Readable<Satisfactory.Building[]> = derived(
 
 		// Filter buildings to only include those that can produce items
 		return Object.entries($store.data.buildings)
-			.filter(([key, building]) => productionBuildingClassNames.has(building.className))
+			.filter(([, building]) => productionBuildingClassNames.has(building.className))
 			.map(([key, building]) => ({
 				...building,
 				key

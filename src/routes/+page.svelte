@@ -7,7 +7,7 @@
 		applyRemoveFactory,
 		applyRenameFactory,
 		createFactory,
-		loadWorkspaceState,
+		loadWorkspaceState
 	} from '$lib/flow/graphStorage';
 	import { onMount, tick } from 'svelte';
 	import { resolve } from '$app/paths';
@@ -83,7 +83,7 @@
 	}
 
 	function openFactory(id: string) {
-		goto(`/factories/${id}`);
+		goto(resolve(`/factories/${id}`));
 	}
 </script>
 

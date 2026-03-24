@@ -26,7 +26,7 @@
 <div>
 	<h2 class="mb-2 text-2xl font-semibold">Recipes</h2>
 	<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-		{#each recipes.sort((r1, r2) => r1.name.localeCompare(r2.name)) as recipe}
+		{#each recipes.sort((r1, r2) => r1.name.localeCompare(r2.name)) as recipe (recipe.key)}
 			<div class="rounded border p-4 shadow-sm">
 				<h3 class="font-bold">{recipe.name}</h3>
 				<h4 class="text-sm text-gray-600">{recipe.className}</h4>
@@ -41,7 +41,7 @@
 						<div class="mt-2">
 							<span class="font-semibold">Ingredients:</span>
 							<ul class="list-inside list-disc">
-								{#each recipe.enrichedIngredients as ingredient}
+								{#each recipe.enrichedIngredients as ingredient (`${recipe.key}-ing-${ingredient.itemSlug}`)}
 									<li>
 										{ingredient.amount} × <span class="font-medium">{ingredient.itemName}</span>
 									</li>
@@ -54,7 +54,7 @@
 						<div class="mt-2">
 							<span class="font-semibold">Products:</span>
 							<ul class="list-inside list-disc">
-								{#each recipe.enrichedProducts as product}
+								{#each recipe.enrichedProducts as product (`${recipe.key}-prod-${product.itemSlug}`)}
 									<li>{product.amount} × <span class="font-medium">{product.itemName}</span></li>
 								{/each}
 							</ul>

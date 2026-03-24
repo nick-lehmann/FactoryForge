@@ -2,7 +2,7 @@
 	import { Dialog } from 'bits-ui';
 	import { Satisfactory } from '$lib/satisfactory';
 	import { items, satisfactoryDataStore } from '$lib/stores/satisfactoryData';
-	import Fuse from 'fuse.js';
+	import Fuse, { type FuseResult } from 'fuse.js';
 
 	interface Props {
 		open: boolean;
@@ -14,7 +14,6 @@
 
 	let searchQuery = $state('');
 	let selectedIndex = $state(0);
-	let isOpen = $state(false);
 
 	// Get all items and filter out non-extractable ones
 	const allItems = $derived(() => {
@@ -60,18 +59,6 @@
 		});
 	});
 
-	// Sync local state with prop
-	$effect(() => {
-		isOpen = open;
-	});
-
-	// Notify parent when local state changes
-	$effect(() => {
-		if (!isOpen && open) {
-			onClose();
-		}
-	});
-
 	// Filter items based on search query
 	const filteredItems = $derived(() => {
 		if (!fuse() || !searchQuery.trim()) {
@@ -79,12 +66,12 @@
 		}
 
 		const results = fuse()!.search(searchQuery);
-		return results.map((result: any) => result.item).slice(0, 10);
+		return results.map((result: FuseResult<Satisfactory.Item>) => result.item).slice(0, 10);
 	});
 
 	// Handle keyboard navigation
 	const handleKeydown = (event: KeyboardEvent) => {
-		if (!isOpen) return;
+		if (!open) return;
 
 		switch (event.key) {
 			case 'ArrowDown':
@@ -118,7 +105,7 @@
 
 	// Reset state when dialog opens
 	$effect(() => {
-		if (isOpen) {
+		if (open) {
 			searchQuery = '';
 			selectedIndex = 0;
 		}
@@ -127,7 +114,12 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<Dialog.Root bind:open={isOpen}>
+<Dialog.Root
+	{open}
+	onOpenChange={(v: boolean) => {
+		if (!v) onClose();
+	}}
+>
 	<Dialog.Portal>
 		<Dialog.Overlay data-bits-dialog-overlay />
 		<Dialog.Content data-bits-dialog-content>
@@ -165,7 +157,7 @@
 					{:else if filteredItems().length === 0}
 						<div class="no-results">No extractable items found</div>
 					{:else}
-						{#each filteredItems() as item, index}
+						{#each filteredItems() as item, index (item.className)}
 							<button
 								class="result-item"
 								class:selected={index === selectedIndex}

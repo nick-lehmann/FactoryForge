@@ -1,31 +1,30 @@
 <script lang="ts">
-    type Props = {
-      name: string
-      onclick: () => void
-      onrename: (name: string) => void
-      ondelete: () => void
-    }
+	type Props = {
+		name: string;
+		onclick: () => void;
+		onrename: (name: string) => void;
+		ondelete: () => void;
+	};
 
-    let { name = $bindable(), onclick, onrename, ondelete }: Props = $props()
+	let { name = $bindable(), onclick, onrename, ondelete }: Props = $props();
 
-    function startRename() {
-      isRenaming = true;
-      editingName = name;
-      editingField?.focus();
-    }
+	function startRename() {
+		isRenaming = true;
+		editingName = name;
+		editingField?.focus();
+	}
 
-    function rename() {
-      isRenaming = false
-      onrename(editingName)
-      editingName = ''
-    }
+	function rename() {
+		isRenaming = false;
+		onrename(editingName);
+		editingName = '';
+	}
 
-    let isRenaming = $state(false);
-    let editingName = $state('');
+	let isRenaming = $state(false);
+	let editingName = $state('');
 
-    let editingField: HTMLElement | null = $state(null)
+	let editingField: HTMLElement | null = $state(null);
 </script>
-
 
 <div class="flex items-start gap-1 p-2">
 	<div class="min-w-0 flex-1 px-1 py-0.5">

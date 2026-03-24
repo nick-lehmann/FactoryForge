@@ -13,7 +13,7 @@
 <div>
 	<h2 class="mb-2 text-2xl font-semibold">Buildings</h2>
 	<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-		{#each buildings.sort((b1, b2) => b1.name.localeCompare(b2.name)) as building}
+		{#each buildings.sort((b1, b2) => b1.name.localeCompare(b2.name)) as building (building.key)}
 			<div class="rounded border p-4 shadow-sm">
 				<h3 class="font-bold">{building.name}</h3>
 				<h4 class="text-sm text-gray-600">{building.className}</h4>

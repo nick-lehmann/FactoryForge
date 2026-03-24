@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { resolve } from '$app/paths'
+	import { resolve } from '$app/paths';
 	import DeleteFactoryDialog from '$lib/components/DeleteFactoryDialog.svelte';
 	import type { WorkspaceState } from '$lib/flow/graphStorage';
 	import {
@@ -8,9 +8,9 @@
 		applyRenameFactory,
 		applySetSidebarCollapsed,
 		createFactory,
-		loadWorkspaceState,
+		loadWorkspaceState
 	} from '$lib/flow/graphStorage';
-	import FactoryOverview from './FactoryOverview.svelte'
+	import FactoryOverview from './FactoryOverview.svelte';
 
 	interface Props {
 		currentFactoryId: string;
@@ -38,7 +38,6 @@
 		workspace = applySetSidebarCollapsed(workspace, !collapsed);
 	}
 
-
 	function confirmDelete() {
 		if (!deleteTargetId) return;
 		const id = deleteTargetId;
@@ -51,7 +50,7 @@
 			if (next) {
 				goto(resolve(`/factories/${next.id}`));
 			} else {
-			    goto(resolve('/'))
+				goto(resolve('/'));
 			}
 		}
 	}
@@ -127,11 +126,11 @@
 							class:ring-blue-300={active}
 							class:border-gray-200={!active}
 						>
-						    <FactoryOverview
+							<FactoryOverview
 								name={factory.name}
 								onclick={() => goto(resolve(`/factories/${factory.id}`))}
-								onrename={(name) => workspace = applyRenameFactory(workspace, factory.id, name)}
-								ondelete={() => workspace = applyRemoveFactory(workspace, factory.id)}
+								onrename={(name) => (workspace = applyRenameFactory(workspace, factory.id, name))}
+								ondelete={() => (workspace = applyRemoveFactory(workspace, factory.id))}
 							/>
 						</li>
 					{/each}

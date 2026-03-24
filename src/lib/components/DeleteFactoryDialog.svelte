@@ -9,16 +9,10 @@
 	}
 
 	let { open, factoryName, onConfirm, onCancel }: Props = $props();
-
-	let internalOpen = $state(false);
-
-	$effect(() => {
-		internalOpen = open;
-	});
 </script>
 
 <Dialog.Root
-	bind:open={internalOpen}
+	{open}
 	onOpenChange={(v: boolean) => {
 		if (!v) onCancel();
 	}}

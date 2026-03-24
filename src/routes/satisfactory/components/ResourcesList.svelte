@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { Satisfactory } from '$lib/satisfactory';
-
 	// Define our enriched resource type
 	interface EnhancedResource {
 		key: string;
@@ -17,7 +15,7 @@
 <div>
 	<h2 class="mb-2 text-2xl font-semibold">Resources</h2>
 	<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-		{#each resources.sort((r1, r2) => r1.itemName.localeCompare(r2.itemName)) as resource}
+		{#each resources.sort( (r1, r2) => r1.itemName.localeCompare(r2.itemName) ) as resource (resource.key)}
 			<div class="rounded border p-4 shadow-sm">
 				<h3 class="font-bold">{resource.itemName}</h3>
 				<h4 class="text-sm text-gray-600">{resource.item}</h4>

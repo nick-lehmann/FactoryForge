@@ -81,13 +81,13 @@
 	function selectRecipe(recipe: Satisfactory.Recipe) {
 		onRecipeSelected(recipe);
 		handleClose();
-	};
+	}
 
 	// Handle closing
 	function handleClose() {
 		searchValue = '';
 		onClose();
-	};
+	}
 
 	// Reset search when opening
 	$effect(() => {
@@ -130,7 +130,7 @@
 								No recipes found for this building.
 							</Command.Empty>
 						{:else}
-							{#each filteredRecipes as recipe}
+							{#each filteredRecipes as recipe (recipe.className)}
 								<Command.Item
 									value={recipe.name}
 									onSelect={() => selectRecipe(recipe)}

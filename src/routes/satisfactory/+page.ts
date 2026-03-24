@@ -120,7 +120,7 @@ function createItemsMap(items: Record<string, Satisfactory.Item>) {
 	const map: Record<string, Satisfactory.Item> = {};
 
 	// Index by className for easy lookup
-	for (const [key, item] of Object.entries(items)) {
+	for (const [, item] of Object.entries(items)) {
 		map[item.className] = item;
 	}
 
@@ -131,7 +131,7 @@ function createBuildingsMap(buildings: Record<string, Satisfactory.Building>) {
 	const map: Record<string, Satisfactory.Building> = {};
 
 	// Index by className for easy lookup
-	for (const [key, building] of Object.entries(buildings)) {
+	for (const [, building] of Object.entries(buildings)) {
 		map[building.className] = building;
 	}
 

@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { BaseEdge, EdgeLabel, type EdgeProps, getBezierPath, getSmoothStepPath, getStraightPath } from '@xyflow/svelte';
+	import {
+		BaseEdge,
+		EdgeLabel,
+		type EdgeProps,
+		getBezierPath,
+		getSmoothStepPath,
+		getStraightPath
+	} from '@xyflow/svelte';
 
 	let {
 		id,
@@ -15,12 +22,16 @@
 		data
 	}: EdgeProps = $props();
 
-  const type: string = "bezier"
+	const type: string = 'bezier';
 
 	let [path, labelX, labelY] = $derived(
-    type == "straight" ? getStraightPath({ sourceX, sourceY, targetX, targetY, }) :
-    type == "smooth" ?  getSmoothStepPath({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition }) : 
-    type == "bezier" ?  getBezierPath({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition }) : ['0', 0, 0]
+		type == 'straight'
+			? getStraightPath({ sourceX, sourceY, targetX, targetY })
+			: type == 'smooth'
+				? getSmoothStepPath({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition })
+				: type == 'bezier'
+					? getBezierPath({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition })
+					: ['0', 0, 0]
 	);
 
 	const itemName = $derived(data?.itemName as string | undefined);
